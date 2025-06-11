@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Student Management System
 
 A secure student management web application with end-to-end encryption built using Django.
@@ -51,3 +52,7 @@ A secure student management web application with end-to-end encryption built usi
 - CSRF protection
 - XSS prevention
 - Secure password storage 
+=======
+# Student-Management-System
+A responsive web application built with modern technologies like django and node. It's a fully secured system for the student where they check their attendance, grade etc.
+>>>>>>> origin/main

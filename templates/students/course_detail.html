@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.name }} - Student Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'students:course_list' %}">Courses</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ course.code }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-5 fw-bold">{{ course.name }}</h1>
+        <p class="lead">{{ course.code }}</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+        {% if is_enrolled %}
+        <span class="badge bg-success p-2 mb-2 d-inline-block">
+            <i class="fas fa-check-circle me-1"></i>You are enrolled in this course
+        </span>
+        {% else %}
+        <a href="{% url 'students:enroll_course' course.id %}" class="btn btn-primary btn-lg">
+            <i class="fas fa-user-plus me-2"></i>Enroll Now
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Course Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h6 class="text-muted">Instructor</h6>
+                        <p class="mb-0 fw-bold">
+                            <i class="fas fa-user-tie me-2 text-primary"></i>{{ course.instructor }}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">Credits</h6>
+                        <p class="mb-0 fw-bold">
+                            <i class="fas fa-graduation-cap me-2 text-primary"></i>{{ course.credits }} Credits
+                        </p>
+                    </div>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <h6 class="text-muted">Start Date</h6>
+                        <p class="mb-0 fw-bold">
+                            <i class="fas fa-calendar-alt me-2 text-primary"></i>{{ course.start_date|date:"F d, Y" }}
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted">End Date</h6>
+                        <p class="mb-0 fw-bold">
+                            <i class="fas fa-calendar-check me-2 text-primary"></i>{{ course.end_date|date:"F d, Y" }}
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-muted">Description</h6>
+                        <p class="mb-0">{{ course.description|linebreaks }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-book me-2"></i>Course Content</h5>
+            </div>
+            <div class="card-body">
+                {% if is_enrolled %}
+                <div class="accordion" id="courseContent">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Module 1: Introduction
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#courseContent">
+                            <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <div>
+                                            <i class="fas fa-file-pdf me-2 text-danger"></i>
+                                            <span>Course Syllabus</span>
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">PDF</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                        <div>
+                                            <i class="fas fa-file-powerpoint me-2 text-warning"></i>
+                                            <span>Introduction Slides</span>
+                                        </div>
+                                        <span class="badge bg-primary rounded-pill">PPT</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Module 2: Core Concepts
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#courseContent">
+                            <div class="accordion-body">
+                                <p class="text-muted">Content will be available after the course starts.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-lock fa-3x text-muted mb-3"></i>
+                    <h5>Course Content Locked</h5>
+                    <p class="text-muted">Enroll in this course to access the content.</p>
+                    <a href="{% url 'students:enroll_course' course.id %}" class="btn btn-primary mt-2">
+                        <i class="fas fa-user-plus me-2"></i>Enroll Now
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mt-4 mt-md-0">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Course Details</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Duration</span>
+                            <span class="fw-bold">
+                                {% with days=course.end_date|timeuntil:course.start_date %}
+                                {{ days }}
+                                {% endwith %}
+                            </span>
+                        </div>
+                    </li>
+                    <li class="list-group-item px-0">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Status</span>
+                            {% if course.start_date|date:"Y-m-d" <= now|date:"Y-m-d" and course.end_date|date:"Y-m-d" >= now|date:"Y-m-d" %}
+                            <span class="badge bg-success">Active</span>
+                            {% elif course.start_date|date:"Y-m-d" > now|date:"Y-m-d" %}
+                            <span class="badge bg-warning text-dark">Upcoming</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Completed</span>
+                            {% endif %}
+                        </div>
+                    </li>
+                    <li class="list-group-item px-0">
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Enrollment Status</span>
+                            {% if is_enrolled %}
+                            <span class="badge bg-success">Enrolled</span>
+                            {% else %}
+                            <span class="badge bg-danger">Not Enrolled</span>
+                            {% endif %}
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-users me-2"></i>Other Courses</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% for other_course in other_courses|slice:":3" %}
+                    <a href="{% url 'students:course_detail' other_course.id %}" class="list-group-item list-group-item-action px-0">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ other_course.name }}</h6>
+                            <small>{{ other_course.credits }} Credits</small>
+                        </div>
+                        <small class="text-muted">{{ other_course.code }}</small>
+                    </a>
+                    {% empty %}
+                    <p class="text-muted text-center mb-0">No other courses available.</p>
+                    {% endfor %}
+                </div>
+                <div class="d-grid mt-3">
+                    <a href="{% url 'students:course_list' %}" class="btn btn-outline-primary btn-sm">
+                        View All Courses
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

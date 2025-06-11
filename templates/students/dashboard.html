@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Student Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5 fw-bold">Welcome, {{ user.first_name|default:user.username }}</h1>
+        <p class="lead">Manage your courses, grades, and profile information.</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-user-circle me-2"></i>Profile Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    {% if student.profile_picture %}
+                    <img src="{{ student.profile_picture.url }}" alt="Profile Picture" class="profile-img mb-3">
+                    {% else %}
+                    <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
+                        <i class="fas fa-user fa-3x text-secondary"></i>
+                    </div>
+                    {% endif %}
+                    <h5>{{ user.get_full_name|default:user.username }}</h5>
+                    <p class="text-muted mb-0">Student ID: {{ student.student_id }}</p>
+                </div>
+                <hr>
+                <div class="d-grid">
+                    <a href="{% url 'students:profile' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-id-card me-2"></i>View Full Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-book me-2"></i>Enrolled Courses</h5>
+            </div>
+            <div class="card-body">
+                {% if enrollments %}
+                <ul class="list-group list-group-flush">
+                    {% for enrollment in enrollments|slice:":3" %}
+                    <li class="list-group-item px-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">{{ enrollment.course.name }}</h6>
+                                <small class="text-muted">{{ enrollment.course.code }}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill">{{ enrollment.get_status_display }}</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% if enrollments.count > 3 %}
+                <div class="text-center mt-3">
+                    <small class="text-muted">And {{ enrollments.count|add:"-3" }} more courses</small>
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                    <p>You are not enrolled in any courses yet.</p>
+                </div>
+                {% endif %}
+                <hr>
+                <div class="d-grid">
+                    <a href="{% url 'students:course_list' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-list me-2"></i>View All Courses
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bell me-2"></i>Notifications</h5>
+            </div>
+            <div class="card-body">
+                {% if notifications %}
+                <ul class="list-group list-group-flush">
+                    {% for notification in notifications %}
+                    <li class="list-group-item px-0">
+                        <h6 class="mb-1">{{ notification.title }}</h6>
+                        <p class="mb-1 small">{{ notification.message }}</p>
+                        <small class="text-muted">{{ notification.created_at|date:"M d, Y" }}</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-check-circle fa-3x text-muted mb-3"></i>
+                    <p>You have no new notifications.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Upcoming Deadlines</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center py-4">
+                    <i class="fas fa-calendar-check fa-3x text-muted mb-3"></i>
+                    <p>No upcoming deadlines at the moment.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Quick Stats</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <h2 class="mb-0 fw-bold">{{ enrollments.count }}</h2>
+                        <small class="text-muted">Courses</small>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h2 class="mb-0 fw-bold">{{ notifications.count }}</h2>
+                        <small class="text-muted">Notifications</small>
+                    </div>
+                    <div class="col-6">
+                        <h2 class="mb-0 fw-bold">0</h2>
+                        <small class="text-muted">Assignments</small>
+                    </div>
+                    <div class="col-6">
+                        <h2 class="mb-0 fw-bold">0</h2>
+                        <small class="text-muted">Messages</small>
+                    </div>
+                </div>
+                <hr>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'students:grades' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-chart-bar me-2"></i>View Grades
+                    </a>
+                    <a href="{% url 'students:attendance' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-calendar-check me-2"></i>View Attendance
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

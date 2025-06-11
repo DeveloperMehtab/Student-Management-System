@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Attendance - Student Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5 fw-bold">Attendance Records</h1>
+        <p class="lead">Track your attendance across all enrolled courses.</p>
+    </div>
+</div>
+
+{% if enrollments %}
+    {% if attendance_summary %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Attendance Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Total Classes</th>
+                                    <th>Present</th>
+                                    <th>Absent</th>
+                                    <th>Late</th>
+                                    <th>Excused</th>
+                                    <th>Attendance Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for course_id, summary in attendance_summary.items %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ summary.course.code }}</strong><br>
+                                        <small class="text-muted">{{ summary.course.name }}</small>
+                                    </td>
+                                    <td>{{ summary.total_classes }}</td>
+                                    <td>
+                                        <span class="badge bg-success">{{ summary.present_count }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">{{ summary.absent_count }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark">{{ summary.late_count }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ summary.excused_count }}</span>
+                                    </td>
+                                    <td>
+                                        {% if summary.attendance_rate >= 90 %}
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ summary.attendance_rate }}%;" aria-valuenow="{{ summary.attendance_rate }}" aria-valuemin="0" aria-valuemax="100">{{ summary.attendance_rate }}%</div>
+                                            </div>
+                                        {% elif summary.attendance_rate >= 75 %}
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-info" role="progressbar" style="width: {{ summary.attendance_rate }}%;" aria-valuenow="{{ summary.attendance_rate }}" aria-valuemin="0" aria-valuemax="100">{{ summary.attendance_rate }}%</div>
+                                            </div>
+                                        {% elif summary.attendance_rate >= 60 %}
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ summary.attendance_rate }}%;" aria-valuenow="{{ summary.attendance_rate }}" aria-valuemin="0" aria-valuemax="100">{{ summary.attendance_rate }}%</div>
+                                            </div>
+                                        {% else %}
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ summary.attendance_rate }}%;" aria-valuenow="{{ summary.attendance_rate }}" aria-valuemin="0" aria-valuemax="100">{{ summary.attendance_rate }}%</div>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% for course_id, attendances in attendance_data.items %}
+        <div class="col-12 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-check me-2"></i>
+                        {{ attendance_summary|get_item:course_id|get_item:'course'|get_item:'name' }}
+                        <span class="badge bg-primary ms-2">{{ attendance_summary|get_item:course_id|get_item:'course'|get_item:'code' }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attendance in attendances %}
+                                <tr>
+                                    <td>{{ attendance.date|date:"F d, Y" }}</td>
+                                    <td>
+                                        {% if attendance.status == 'present' %}
+                                            <span class="badge bg-success">Present</span>
+                                        {% elif attendance.status == 'absent' %}
+                                            <span class="badge bg-danger">Absent</span>
+                                        {% elif attendance.status == 'late' %}
+                                            <span class="badge bg-warning text-dark">Late</span>
+                                        {% elif attendance.status == 'excused' %}
+                                            <span class="badge bg-info">Excused</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ attendance.remarks|default:"-" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-calendar-times fa-4x text-muted mb-3"></i>
+                    <h3>No Attendance Records</h3>
+                    <p class="text-muted">There are no attendance records available for your enrolled courses yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-book fa-4x text-muted mb-3"></i>
+                <h3>No Courses Enrolled</h3>
+                <p class="text-muted">You are not enrolled in any courses. Enroll in courses to track your attendance.</p>
+                <a href="{% url 'students:course_list' %}" class="btn btn-primary mt-3">
+                    <i class="fas fa-book me-2"></i>Browse Courses
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row mt-4">
+    <div class="col-md-6 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Attendance Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-shield-alt fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="alert-heading">End-to-End Encryption</h5>
+                            <p class="mb-0">Your attendance information is encrypted for your privacy and security.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6 class="mt-4">Attendance Status Types</h6>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        <span>Present</span>
+                        <span class="badge bg-success">Attended class on time</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        <span>Absent</span>
+                        <span class="badge bg-danger">Did not attend class</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        <span>Late</span>
+                        <span class="badge bg-warning text-dark">Arrived late to class</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
+                        <span>Excused</span>
+                        <span class="badge bg-info">Absence with valid reason</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Attendance Policy</h5>
+            </div>
+            <div class="card-body">
+                <p>Maintaining good attendance is crucial for academic success. Please note the following attendance policies:</p>
+                
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <strong>Minimum Attendance:</strong> Students must maintain at least 75% attendance in each course.
+                    </li>
+                    <li class="list-group-item px-0">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <strong>Late Arrivals:</strong> Three late arrivals will be counted as one absence.
+                    </li>
+                    <li class="list-group-item px-0">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <strong>Excused Absences:</strong> Require proper documentation (medical certificate, etc.).
+                    </li>
+                    <li class="list-group-item px-0">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        <strong>Warning:</strong> Students with attendance below 75% may not be allowed to sit for final exams.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

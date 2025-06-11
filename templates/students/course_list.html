@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Courses - Student Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1 class="display-5 fw-bold">Available Courses</h1>
+        <p class="lead">Browse and enroll in courses to start your learning journey.</p>
+    </div>
+    <div class="col-md-4">
+        <form method="GET" class="d-flex">
+            <input type="text" name="q" class="form-control me-2" placeholder="Search courses..." value="{{ query|default:'' }}">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+{% if courses %}
+<div class="row">
+    {% for course in courses %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">{{ course.code }}</h5>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ course.name }}</h5>
+                <p class="card-text text-muted mb-2">
+                    <i class="fas fa-user-tie me-2"></i>{{ course.instructor }}
+                </p>
+                <p class="card-text text-muted mb-3">
+                    <i class="fas fa-calendar-alt me-2"></i>{{ course.start_date|date:"M d, Y" }} - {{ course.end_date|date:"M d, Y" }}
+                </p>
+                <p class="card-text mb-3">{{ course.description|truncatewords:20 }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge bg-light text-dark">
+                        <i class="fas fa-graduation-cap me-1"></i>{{ course.credits }} Credits
+                    </span>
+                    <a href="{% url 'students:course_detail' course.id %}" class="btn btn-sm btn-outline-primary">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-book-open fa-4x text-muted mb-3"></i>
+                <h3>No Courses Found</h3>
+                {% if query %}
+                <p class="text-muted">No courses match your search for "{{ query }}".</p>
+                <a href="{% url 'students:course_list' %}" class="btn btn-primary mt-3">
+                    <i class="fas fa-sync-alt me-2"></i>Clear Search
+                </a>
+                {% else %}
+                <p class="text-muted">There are no courses available at the moment.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

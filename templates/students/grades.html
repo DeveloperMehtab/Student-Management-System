@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+
+{% block title %}Grades - Student Management System{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="display-5 fw-bold">Your Grades</h1>
+        <p class="lead">View your academic performance across all courses.</p>
+    </div>
+</div>
+
+{% if grades_data %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Grade Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Course Code</th>
+                                <th>Course Name</th>
+                                <th>Instructor</th>
+                                <th>Grade</th>
+                                <th>Graded Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in grades_data %}
+                            <tr>
+                                <td>{{ grade.course.code }}</td>
+                                <td>{{ grade.course.name }}</td>
+                                <td>{{ grade.course.instructor }}</td>
+                                <td>
+                                    {% if grade.grade == 'Not graded yet' %}
+                                    <span class="badge bg-secondary">{{ grade.grade }}</span>
+                                    {% elif grade.grade == 'A' %}
+                                    <span class="badge bg-success">{{ grade.grade }}</span>
+                                    {% elif grade.grade == 'B' %}
+                                    <span class="badge bg-primary">{{ grade.grade }}</span>
+                                    {% elif grade.grade == 'C' %}
+                                    <span class="badge bg-info">{{ grade.grade }}</span>
+                                    {% elif grade.grade == 'D' %}
+                                    <span class="badge bg-warning text-dark">{{ grade.grade }}</span>
+                                    {% elif grade.grade == 'F' %}
+                                    <span class="badge bg-danger">{{ grade.grade }}</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">{{ grade.grade }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if grade.graded_date %}
+                                    {{ grade.graded_date|date:"F d, Y" }}
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Grade Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    {% with a_count=0 b_count=0 c_count=0 d_count=0 f_count=0 other_count=0 %}
+                    
+                    {% for grade in grades_data %}
+                        {% if grade.grade == 'A' %}
+                            {% with a_count=a_count|add:1 %}{% endwith %}
+                        {% elif grade.grade == 'B' %}
+                            {% with b_count=b_count|add:1 %}{% endwith %}
+                        {% elif grade.grade == 'C' %}
+                            {% with c_count=c_count|add:1 %}{% endwith %}
+                        {% elif grade.grade == 'D' %}
+                            {% with d_count=d_count|add:1 %}{% endwith %}
+                        {% elif grade.grade == 'F' %}
+                            {% with f_count=f_count|add:1 %}{% endwith %}
+                        {% else %}
+                            {% with other_count=other_count|add:1 %}{% endwith %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <div class="col-4 mb-3">
+                        <div class="p-3 bg-success text-white rounded">
+                            <h3 class="mb-0">{{ a_count }}</h3>
+                            <small>A Grades</small>
+                        </div>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="p-3 bg-primary text-white rounded">
+                            <h3 class="mb-0">{{ b_count }}</h3>
+                            <small>B Grades</small>
+                        </div>
+                    </div>
+                    <div class="col-4 mb-3">
+                        <div class="p-3 bg-info text-white rounded">
+                            <h3 class="mb-0">{{ c_count }}</h3>
+                            <small>C Grades</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 bg-warning text-dark rounded">
+                            <h3 class="mb-0">{{ d_count }}</h3>
+                            <small>D Grades</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 bg-danger text-white rounded">
+                            <h3 class="mb-0">{{ f_count }}</h3>
+                            <small>F Grades</small>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 bg-secondary text-white rounded">
+                            <h3 class="mb-0">{{ other_count }}</h3>
+                            <small>Pending</small>
+                        </div>
+                    </div>
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Grade Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-shield-alt fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="alert-heading">End-to-End Encryption</h5>
+                            <p class="mb-0">Your grade information is encrypted for your privacy and security.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6 class="mt-4">Grading Scale</h6>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span><span class="badge bg-success me-2">A</span> Excellent</span>
+                        <span>90-100%</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span><span class="badge bg-primary me-2">B</span> Good</span>
+                        <span>80-89%</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span><span class="badge bg-info me-2">C</span> Average</span>
+                        <span>70-79%</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span><span class="badge bg-warning text-dark me-2">D</span> Below Average</span>
+                        <span>60-69%</span>
+                    </li>
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span><span class="badge bg-danger me-2">F</span> Failing</span>
+                        <span>Below 60%</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="fas fa-chart-line fa-4x text-muted mb-3"></i>
+                <h3>No Grades Available</h3>
+                <p class="text-muted">You don't have any grades yet. Enroll in courses to start your academic journey.</p>
+                <a href="{% url 'students:course_list' %}" class="btn btn-primary mt-3">
+                    <i class="fas fa-book me-2"></i>Browse Courses
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %} 

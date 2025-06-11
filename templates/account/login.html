@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load account %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login - Student Management System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card border-0 shadow-lg">
+            <div class="card-header bg-primary text-white text-center py-4">
+                <h3 class="mb-0">
+                    <i class="fas fa-sign-in-alt me-2"></i>{% trans "Sign In" %}
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-center mb-4">{% blocktrans %}If you have not created an account yet, then please
+                <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
+
+                <form class="login" method="POST" action="{% url 'account_login' %}">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                            <label class="form-check-label" for="remember">
+                                {% trans "Remember Me" %}
+                            </label>
+                        </div>
+                        <a class="text-decoration-none" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+                    </div>
+                    
+                    <div class="d-grid mt-4">
+                        <button class="btn btn-primary btn-lg" type="submit">
+                            <i class="fas fa-sign-in-alt me-2"></i>{% trans "Sign In" %}
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <p class="mb-0">{% trans "Don't have an account?" %} <a href="{{ signup_url }}">{% trans "Sign up" %}</a></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow-sm mt-4">
+            <div class="card-body p-4">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <i class="fas fa-shield-alt fa-2x text-primary"></i>
+                    </div>
+                    <div>
+                        <h5>{% trans "Secure Login" %}</h5>
+                        <p class="mb-0 text-muted">{% trans "Your connection to our site is encrypted and your data is protected." %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
